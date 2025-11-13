@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Stresslevel Anzeige – Weihnachten</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      background: radial-gradient(circle at top, #AD5F5A 0, #8A2724 45%, #330F0C 100%);
+      color: #222;
+      padding: 9rem 1rem;
+    }
+
+    .ueberschrift {
+      font-size: 2.0rem;
+      font-weight: bold;
+      text-align: center;
+      color: #fff;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+      margin-bottom: 1.5rem;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 18px;
+      padding: 24px 26px;
+      width: 90vw;
+      max-width: 600px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+      margin: auto
+    }
+
+    h1 {
+      margin-top: 0;
+      text-align: center;
+      font-size: 1.6rem;
+    }
+
+    label, select, input {
+      display: block;
+      width: 100%;
+      margin-top: 10px;
+      font-size: 1rem;
+      padding: 8px;
+    }
+
+    .anzeige {
+      margin-top: 16px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 1.1rem;
+    }
+
+    .bar-outer {
+      width: 100%;
+      height: 26px;
+      border-radius: 999px;
+      background: #eeeeee;
+      overflow: hidden;
+      margin-top: 10px;
+      box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .bar-inner {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #b71c1c, #f44336, #ffb300);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: width 0.4s ease, background 0.4s ease;
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.9rem;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    .btn {
+      margin-top: 18px;
+      background: #2e7d32;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 999px;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div class="ueberschrift">🎄 Weihnachts-Hotline Stressmonitor 🎄</div>
+
+  <div class="card" id="auswahl">
+    <h1>Wähle dein Team</h1>
+    
+    <select id="teamSelect">
+      <option value="" >Bitte auswählen</option>
+      <option value="A">Schneeflockensupport</option>
+      <option value="B">Rentier-Hotline</option>
+      <option value="C">Wunschlisten-Management</option>
+      <option value="D">Lebkuchen-Lösungen</option>
+      <option value="E">Elfen-Eskalationsstelle</option>
+      <option value="F">Geschenketracking</option>
+      <option value="G">Kekskontrolle</option>
+      <option value="H">Schlitten-Backoffice</option>
+    </select>
+    <button class="btn" onclick="startTeam()">Weiter</button>
+  </div>
+
+  <div class="card" id="app" style="display: none;">
+    <h1 id="teamTitel">Team</h1>
+
+    <div class="anzeige" id="ergebnis">Gib deine Lösung ein!</div>
+
+    <div class="bar-outer">
+      <div class="bar-inner" id="stressbalken">100%</div>
+    </div>
+
+    <label for="fall">Fall-Nummer:</label>
+    <select id="fall">
+      <option value="" >Bitte auswählen</option>
+      <option value="1">Testfall</option>
+      <option value="2">Rentier-Hotline</option>
+      <option value="3">Wunschlisten-Management</option>
+      <option value="4">Lebkuchen-Lösungen</option>
+    </select>
+
+    <label for="lösung">Lösung:</label>
+    <input type="text" id="lösung">
+
+    <button class="btn" onclick="checkLösung()">Lösung prüfen</button>
+  </div>
+
+  <script>
+    const lösungsdaten = {
+      "1": { lösung: "schnitzel", stress: 25 },
+      "2": { lösung: "banane", stress: 25 },
+      "3": { lösung: "fisch", stress: 25 },
+      "4": { lösung: "keks", stress: 25 }
+    };
+
+    let aktuellesTeam = "";
+    let aktuellerStress = 100;
+    let erledigteFaelle = new Set();
+
+    function startTeam() {
+      const team = document.getElementById("teamSelect").value;
+      const teamText = document.getElementById("teamSelect").selectedOptions[0].text;
+      if (!team) return;
+
+      aktuellesTeam = team;
+      aktuellerStress = 100;
+      erledigteFaelle.clear();
+      document.getElementById("teamTitel").textContent = teamText;
+
+      document.getElementById("auswahl").style.display = "none";
+      document.getElementById("app").style.display = "block";
+      updateStress(0);
+    }
+
+    function updateStress(reduzierung) {
+      aktuellerStress = Math.max(0, aktuellerStress - reduzierung);
+      const balken = document.getElementById("stressbalken");
+      balken.style.width = aktuellerStress + "%";
+      balken.textContent = aktuellerStress + "%";
+
+      if (aktuellerStress > 70) {
+        balken.style.background = "linear-gradient(90deg, #b71c1c, #f44336, #ffb300)";
+      } else if (aktuellerStress > 40) {
+        balken.style.background = "linear-gradient(90deg, #f57c00, #ffb300, #ffee58)";
+      } else {
+        balken.style.background = "linear-gradient(90deg, #388e3c, #66bb6a, #a5d6a7)";
+      }
+    }
+
+    function checkLösung() {
+      const fall = document.getElementById("fall").value;
+      const eingabe = document.getElementById("lösung").value.trim().toLowerCase();
+      const daten = lösungsdaten[fall];
+      const ergebnis = document.getElementById("ergebnis");
+
+      if (!daten) {
+        ergebnis.textContent = "Bitte Fall auswählen!";
+        return;
+      }
+
+      const schlüssel = `${aktuellesTeam}-${fall}`;
+
+      if (erledigteFaelle.has(schlüssel)) {
+        ergebnis.textContent = "Dieser Fall wurde bereits gelöst.";
+        return;
+      }
+
+      if (eingabe === daten.lösung) {
+        ergebnis.textContent = `Richtig! Stress sinkt um ${daten.stress}%.`;
+        erledigteFaelle.add(schlüssel);
+        updateStress(daten.stress);
+        document.getElementById("lösung").value = "";
+      } else {
+        ergebnis.textContent = "Falsche Lösung.";
+        document.getElementById("lösung").value = "";
+      }
+    }
+  </script>
+</body>
+</html>
