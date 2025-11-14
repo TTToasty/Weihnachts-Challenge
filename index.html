@@ -156,6 +156,14 @@
     let aktuellerStress = 100;
     let erledigteFaelle = new Set();
 
+    document.getElementById("lösung").addEventListener("keydown", function(event) {
+      if (event.key === "Enter") {
+      event.preventDefault();
+      checkLösung();
+    }
+  });
+
+    
     function startTeam() {
       const team = document.getElementById("teamSelect").value;
       const teamText = document.getElementById("teamSelect").selectedOptions[0].text;
@@ -221,5 +229,6 @@
   </script>
 </body>
 </html>
+
 
 
