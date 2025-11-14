@@ -177,6 +177,10 @@
       balken.style.width = aktuellerStress + "%";
       balken.textContent = aktuellerStress + "%";
 
+      if (aktuellerStress === 0) {
+        ergebnis.textContent = "🎉 Geschafft! Der Stress ist besiegt. 🎄";
+    }
+
       if (aktuellerStress > 70) {
         balken.style.background = "linear-gradient(90deg, #b71c1c, #f44336, #ffb300)";
       } else if (aktuellerStress > 40) {
@@ -217,4 +221,5 @@
   </script>
 </body>
 </html>
+
 
