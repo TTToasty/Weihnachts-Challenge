@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>Stresslevel Anzeige – Weihnachten</title>
+  <title>North Pole Customer Happiness Hotline</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     * {
@@ -124,7 +124,7 @@
   </style>
 </head>
 <body>
-  <div class="ueberschrift">🎄 Weihnachts-Hotline Stressmonitor 🎄</div>
+  <div class="ueberschrift">🎄 North Pole Customer Happiness Hotline 🎄</div>
   
   <div class="card" id="auswahl">
     <h1>Wähle dein Team</h1>
@@ -141,7 +141,7 @@
       <option value="H">Schlitten-Backoffice</option>
     </select>
     <button class="btn" onclick="startTeam()">Weiter</button>
-    <button class="btn" onclick="zeigeUebersicht()">Zur Stress-Übersicht</button>
+    <button class="btn" onclick="zeigeUebersicht()">Zur Übersicht</button>
 
   </div>
 
@@ -171,7 +171,7 @@
   </div>
 
   <div class="card" id="uebersicht" style="display: none; margin-top: 2rem;">
-  <h1 style="text-align: center;">Aktueller Stresslevel aller Teams</h1>
+  <h1 style="text-align: center;">Aktueller Rückstau aller Teams</h1>
   <div id="balkenContainer"></div>
   <button class="btn" onclick="zurueckZurAuswahl()" style="margin-top: 1.5rem;">Zurück</button>
 </div>
@@ -250,7 +250,7 @@
       balken.textContent = aktuellerStress + "%";
 
       if (aktuellerStress === 0) {
-        ergebnis.textContent = "🎉 Geschafft! Der Stress ist besiegt. 🎄";
+        ergebnis.textContent = "🎉 Geschafft! Der Rückstau ist beseitigt. 🎄🧙‍♂️";
     }
 
       if (aktuellerStress > 70) {
@@ -282,7 +282,7 @@
       }
 
       if (eingabe === daten.lösung) {
-        ergebnis.textContent = `Richtig! Stress sinkt um ${daten.stress}%.`;
+        ergebnis.textContent = `Richtig! Rückstau sinkt um ${daten.stress}%.`;
         erledigteFaelle.add(schlüssel);
         updateStress(daten.stress);
         document.getElementById("lösung").value = "";
