@@ -102,7 +102,7 @@
 </head>
 <body>
   <div class="ueberschrift">🎄 Weihnachts-Hotline Stressmonitor 🎄</div>
-
+  
   <div class="card" id="auswahl">
     <h1>Wähle dein Team</h1>
     
@@ -118,6 +118,8 @@
       <option value="H">Schlitten-Backoffice</option>
     </select>
     <button class="btn" onclick="startTeam()">Weiter</button>
+    <button class="btn" onclick="zeigeUebersicht()">Zur Stress-Übersicht</button>
+
   </div>
 
   <div class="card" id="app" style="display: none;">
@@ -142,7 +144,14 @@
     <input type="text" id="lösung">
 
     <button class="btn" onclick="checkLösung()">Lösung prüfen</button>
+    <button class="btn" onclick="zurueckZurAuswahl()" style="margin-top: 1.5rem;">Zurück</button>
   </div>
+
+  <div class="card" id="uebersicht" style="display: none; margin-top: 2rem;">
+  <h1 style="text-align: center;">Aktueller Stresslevel aller Teams</h1>
+  <div id="balkenContainer"></div>
+  <button class="btn" onclick="zurueckZurAuswahl()" style="margin-top: 1.5rem;">Zurück</button>
+</div>
 
     
     <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-app-compat.js"></script>
@@ -264,6 +273,92 @@
         document.getElementById("lösung").value = "";
       }
     }
+
+  function ladeUebersicht() {
+  const container = document.getElementById("uebersicht");
+  const balkenContainer = document.getElementById("balkenContainer");
+  balkenContainer.innerHTML = "";
+
+  // Liste aller bekannten Teams
+  const bekannteTeams = {
+    A: "Schneeflockensupport",
+    B: "Rentier-Hotline",
+    C: "Wunschlisten-Management",
+    D: "Lebkuchen-Lösungen",
+    E: "Elfen-Eskalationsstelle",
+    F: "Geschenketracking",
+    G: "Kekskontrolle",
+    H: "Schlitten-Backoffice"
+  };
+
+  // Alle Einträge aus der Datenbank holen
+  db.collection("teams").get().then(snapshot => {
+    const gespeicherteTeams = {};
+    
+    snapshot.forEach(doc => {
+      gespeicherteTeams[doc.id] = doc.data();
+    });
+
+    // Alle bekannten Teams durchgehen
+    Object.entries(bekannteTeams).forEach(([key, name]) => {
+      let daten = gespeicherteTeams[key];
+
+      // Wenn es den Eintrag noch nicht gibt → anlegen mit 100 %
+      if (!daten) {
+        daten = { stress: 100, erledigt: [] };
+        db.collection("teams").doc(key).set(daten);
+      }
+
+      const stress = daten.stress ?? 100;
+
+      const teamDiv = document.createElement("div");
+      teamDiv.style.marginBottom = "1rem";
+
+      const label = document.createElement("div");
+      label.textContent = name;
+      label.style.marginBottom = "0.3rem";
+      label.style.fontWeight = "bold";
+
+      const outer = document.createElement("div");
+      outer.className = "bar-outer";
+
+      const inner = document.createElement("div");
+      inner.className = "bar-inner";
+      inner.style.width = stress + "%";
+      inner.textContent = stress + "%";
+
+      if (stress > 70) {
+        inner.style.background = "linear-gradient(90deg, #b71c1c, #f44336, #ffb300)";
+      } else if (stress > 40) {
+        inner.style.background = "linear-gradient(90deg, #f57c00, #ffb300, #ffee58)";
+      } else {
+        inner.style.background = "linear-gradient(90deg, #388e3c, #66bb6a, #a5d6a7)";
+      }
+
+      outer.appendChild(inner);
+      teamDiv.appendChild(label);
+      teamDiv.appendChild(outer);
+      balkenContainer.appendChild(teamDiv);
+    });
+
+    container.style.display = "block";
+  });
+}
+
+  function zeigeUebersicht() {
+  document.getElementById("auswahl").style.display = "none";
+  document.getElementById("app").style.display = "none";
+  document.getElementById("uebersicht").style.display = "block";
+  ladeUebersicht();
+}
+
+ function zurueckZurAuswahl() {
+  document.getElementById("uebersicht").style.display = "none";
+  document.getElementById("app").style.display = "none";
+  document.getElementById("auswahl").style.display = "block";
+}
+
   </script>
+  
 </body>
 </html>
