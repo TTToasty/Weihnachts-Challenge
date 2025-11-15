@@ -98,6 +98,29 @@
       cursor: pointer;
       width: 100%;
     }
+
+    .snowflake {
+      position: fixed;
+      top: -2rem;
+      color: #fff;
+      font-size: 1.2rem;
+      animation: fall linear infinite;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100vh) rotate(180deg);
+        opacity: 0;
+      }
+    }
+
+    
   </style>
 </head>
 <body>
@@ -358,6 +381,29 @@
   document.getElementById("auswahl").style.display = "block";
 }
 
+  function erstelleSchneeflocke() {
+  const schneeflocke = document.createElement("div");
+  schneeflocke.classList.add("snowflake");
+  const emojis = ["❄️", "🎄", "☃️", "✨", "🎁", "⭐", "🦌", "🍪"];
+schneeflocke.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+
+
+  // Zufällige Position und Größe
+  schneeflocke.style.left = Math.random() * 100 + "vw";
+  schneeflocke.style.fontSize = (Math.random() * 12 + 12) + "px";
+  schneeflocke.style.animationDuration = (Math.random() * 7 + 5) + "s";
+
+  document.body.appendChild(schneeflocke);
+
+  setTimeout(() => {
+    schneeflocke.remove();
+  }, 5000); // entfernt die Flocke nach 5 Sekunden
+}
+
+// Alle 200–400ms eine neue Schneeflocke
+setInterval(erstelleSchneeflocke, 300);
+
+  
   </script>
   
 </body>
