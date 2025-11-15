@@ -144,7 +144,25 @@
     <button class="btn" onclick="checkLösung()">Lösung prüfen</button>
   </div>
 
-  <script>
+    
+    <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore-compat.js"></script>
+
+<script>
+  
+  const firebaseConfig = {
+      apiKey: "AIzaSyA5XYxLTaS89XTwSXReX6TAlK5wUfDC0Fc",
+      authDomain: "weihnachts-challenge-e8829.firebaseapp.com",
+      projectId: "weihnachts-challenge-e8829",
+      storageBucket: "weihnachts-challenge-e8829.firebasestorage.app",
+      messagingSenderId: "169921346552",
+      appId: "1:169921346552:web:f860f9564bb49033dfb40d"
+    };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore()
+  
+    
     const lösungsdaten = {
       "1": { lösung: "timmy", stress: 25 },
       "2": { lösung: "banane", stress: 25 },
@@ -170,8 +188,22 @@
       if (!team) return;
 
       aktuellesTeam = team;
-      aktuellerStress = 100;
-      erledigteFaelle.clear();
+
+      db.collection("teams").doc(team).get().then((doc) => {
+  if (doc.exists) {
+    const data = doc.data();
+    aktuellerStress = data.stress ?? 100;
+    erledigteFaelle = new Set(data.erledigt ?? []);
+  } else {
+    aktuellerStress = 100;
+    erledigteFaelle = new Set();
+  }
+  document.getElementById("teamTitel").textContent = teamText;
+  document.getElementById("auswahl").style.display = "none";
+  document.getElementById("app").style.display = "block";
+  updateStress(0);
+});
+  
       document.getElementById("teamTitel").textContent = teamText;
 
       document.getElementById("auswahl").style.display = "none";
@@ -212,6 +244,7 @@
       const schlüssel = `${aktuellesTeam}-${fall}`;
 
       if (erledigteFaelle.has(schlüssel)) {
+        document.getElementById("lösung").value = "";
         ergebnis.textContent = "Dieser Fall wurde bereits gelöst.";
         return;
       }
@@ -221,6 +254,11 @@
         erledigteFaelle.add(schlüssel);
         updateStress(daten.stress);
         document.getElementById("lösung").value = "";
+        // Speichern in Firebase
+        db.collection("teams").doc(aktuellesTeam).set({
+          stress: aktuellerStress,
+          erledigt: Array.from(erledigteFaelle)
+        });
       } else {
         ergebnis.textContent = "Falsche Lösung.";
         document.getElementById("lösung").value = "";
@@ -229,8 +267,3 @@
   </script>
 </body>
 </html>
-
-
-
-
-
