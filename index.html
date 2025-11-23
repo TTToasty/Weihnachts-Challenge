@@ -221,10 +221,10 @@
     function hilfeUmschalten() {
       hilfeAktiv = !hilfeAktiv;
       updateHilfeanzeige();
-      db.collection("teams").doc(aktuellesTeam).set({
+      db.collection("teams").doc(aktuellesTeam).update({
         stress: aktuellerStress,
         erledigt: Array.from(erledigteFaelle),
-        hilfe: hilfeAktiv
+        hilfe: false
       });
     }
 
@@ -465,6 +465,7 @@ setInterval(erstelleSchneeflocke, 300);
   
 </body>
 </html>
+
 
 
 
