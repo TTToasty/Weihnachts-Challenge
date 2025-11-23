@@ -208,6 +208,7 @@
     let aktuellerStress = 100;
     let erledigteFaelle = new Set();
     let hilfeAktiv = false;
+    let unsubscribeUebersicht = null;
 
     document.getElementById("lösung").addEventListener("keydown", function(event) {
       if (event.key === "Enter") {
@@ -399,13 +400,28 @@
   document.getElementById("auswahl").style.display = "none";
   document.getElementById("app").style.display = "none";
   document.getElementById("uebersicht").style.display = "block";
+   // Falls schon ein Listener läuft → stoppen
+  if (unsubscribeUebersicht) {
+    unsubscribeUebersicht();
+  }
+    // Direkt einmal laden
   ladeUebersicht();
+
+  // LIVE-Listener starten
+  unsubscribeUebersicht = db.collection("teams").onSnapshot(() => {
+    ladeUebersicht();
+  });
 }
 
  function zurueckZurAuswahl() {
   document.getElementById("uebersicht").style.display = "none";
   document.getElementById("app").style.display = "none";
   document.getElementById("auswahl").style.display = "block";
+   if (unsubscribeUebersicht) {
+  unsubscribeUebersicht();
+  unsubscribeUebersicht = null;
+}
+
 }
 
   function erstelleSchneeflocke() {
