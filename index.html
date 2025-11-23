@@ -209,6 +209,7 @@
     let erledigteFaelle = new Set();
     let hilfeAktiv = false;
     let unsubscribeUebersicht = null;
+    let unsubscribeTeam = null;
 
     document.getElementById("lösung").addEventListener("keydown", function(event) {
       if (event.key === "Enter") {
@@ -265,6 +266,19 @@
       document.getElementById("auswahl").style.display = "none";
       document.getElementById("app").style.display = "block";
       updateStress(0);
+
+      unsubscribeTeam = db.collection("teams").doc(aktuellesTeam)
+    .onSnapshot(doc => {
+      if (doc.exists) {
+        const data = doc.data();
+        // Aktualisiere Stressbalken, erledigte Fälle, Hilfeanzeige
+        aktuellerStress = data.stress ?? 100;
+        erledigteFaelle = new Set(data.erledigt ?? []);
+        hilfeAktiv = data.hilfe ?? false;
+        updateStress(0);
+        updateHilfeanzeige();
+      }
+    });
     }
 
     function updateStress(reduzierung) {
