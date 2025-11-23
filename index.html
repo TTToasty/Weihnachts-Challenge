@@ -158,9 +158,9 @@
     <select id="fall">
       <option value="" >Bitte auswählen</option>
       <option value="1">Chaos in der Poststelle</option>
-      <option value="2">Paketverlagerung</option>
-      <option value="3">Durcheinander in der Werkstatt</option>
-      <option value="4">Langfinger im Pausenraum</option>
+      <option value="2">Fall 2</option>
+      <option value="3">Fall 3</option>
+      <option value="4">Fall 4</option>
     </select>
 
     <label for="lösung">Lösung:</label>
@@ -199,15 +199,16 @@
     
     const lösungsdaten = {
       "1": { lösung: "timmy", stress: 25 },
-      "2": { lösung: "leise rieselt der schnee", stress: 25 },
-      "3": { lösung: "elfe", stress: 25 },
-      "4": { lösung: "frostina", stress: 25 }
+      "2": { lösung: "banane", stress: 25 },
+      "3": { lösung: "fisch", stress: 25 },
+      "4": { lösung: "keks", stress: 25 }
     };
 
     let aktuellesTeam = "";
     let aktuellerStress = 100;
     let erledigteFaelle = new Set();
     let hilfeAktiv = false;
+
 
     document.getElementById("lösung").addEventListener("keydown", function(event) {
       if (event.key === "Enter") {
@@ -216,26 +217,27 @@
     }
   });
 
-    function hilfeUmschalten() {
-      hilfeAktiv = !hilfeAktiv;
-      updateHilfeanzeige();
-      db.collection("teams").doc(aktuellesTeam).set({
-        stress: aktuellerStress,
-        erledigt: Array.from(erledigteFaelle),
-        hilfe: hilfeAktiv
-      });
-    }
+function hilfeUmschalten() {
+  hilfeAktiv = !hilfeAktiv;
+  updateHilfeanzeige();
+  db.collection("teams").doc(aktuellesTeam).set({
+    stress: aktuellerStress,
+    erledigt: Array.from(erledigteFaelle),
+    hilfe: hilfeAktiv
+  });
+}
 
-    function updateHilfeanzeige() {
-    const btn = document.getElementById("hilfeBtn");
-    if (hilfeAktiv) {
-      btn.textContent = "🆘 Hilfe ist unterwegs!";
-      btn.style.background = "#d32f2f";
-    } else {
-      btn.textContent = "🙋‍♀️ Hilfe anfordern";
-      btn.style.background = "#2e7d32";
-     }
-   }
+  function updateHilfeanzeige() {
+  const btn = document.getElementById("hilfeBtn");
+  if (hilfeAktiv) {
+    btn.textContent = "🆘 Hilfe ist unterwegs!";
+    btn.style.background = "#d32f2f";
+  } else {
+    btn.textContent = "🙋‍♀️ Hilfe anfordern";
+    btn.style.background = "#2e7d32";
+  }
+}
+
   
     function startTeam() {
       const team = document.getElementById("teamSelect").value;
@@ -243,12 +245,14 @@
       if (!team) return;
 
       aktuellesTeam = team;
-
+      
       db.collection("teams").doc(team).get().then((doc) => {
   if (doc.exists) {
     const data = doc.data();
     aktuellerStress = data.stress ?? 100;
     erledigteFaelle = new Set(data.erledigt ?? []);
+    hilfeAktiv = data.hilfe ?? false;
+   updateHilfeanzeige(); // Zeigt Hilfe-Status auf der Teamseite an
   } else {
     aktuellerStress = 100;
     erledigteFaelle = new Set();
@@ -264,6 +268,7 @@
       document.getElementById("auswahl").style.display = "none";
       document.getElementById("app").style.display = "block";
       updateStress(0);
+
     }
 
     function updateStress(reduzierung) {
@@ -363,9 +368,10 @@
       const label = document.createElement("div");
       label.textContent = name;
       if (daten.hilfe) {
-        label.textContent += " – 🆘 Hilfe benötigt";
-        label.style.color = "#d32f2f";
-      }
+  label.textContent += " – 🆘 Hilfe benötigt";
+  label.style.color = "#d32f2f";
+}
+
       label.style.marginBottom = "0.3rem";
       label.style.fontWeight = "bold";
 
@@ -399,13 +405,25 @@
   document.getElementById("auswahl").style.display = "none";
   document.getElementById("app").style.display = "none";
   document.getElementById("uebersicht").style.display = "block";
+     if (unsubscribeUebersicht) {
+    unsubscribeUebersicht();
   ladeUebersicht();
+       unsubscribeUebersicht = db.collection("teams").onSnapshot(() => {
+    ladeUebersicht();
+  });
+       ladeUebersicht();
+}
+    
 }
 
  function zurueckZurAuswahl() {
   document.getElementById("uebersicht").style.display = "none";
   document.getElementById("app").style.display = "none";
   document.getElementById("auswahl").style.display = "block";
+   if (unsubscribeUebersicht) {
+  unsubscribeUebersicht();
+  unsubscribeUebersicht = null;
+}
 }
 
   function erstelleSchneeflocke() {
@@ -435,7 +453,3 @@ setInterval(erstelleSchneeflocke, 300);
   
 </body>
 </html>
-
-
-
-
