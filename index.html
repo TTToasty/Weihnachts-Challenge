@@ -168,6 +168,8 @@
 
     <button class="btn" onclick="checkLösung()">Lösung prüfen</button>
     <button class="btn" onclick="zurueckZurAuswahl()" style="margin-top: 1.5rem;">Zurück</button>
+    <button class="btn" onclick="hilfeUmschalten()" id="hilfeBtn">🙋‍♀️ Hilfe!</button>
+
   </div>
 
   <div class="card" id="uebersicht" style="display: none; margin-top: 2rem;">
@@ -205,6 +207,7 @@
     let aktuellesTeam = "";
     let aktuellerStress = 100;
     let erledigteFaelle = new Set();
+    let hilfeAktiv = false;
 
     document.getElementById("lösung").addEventListener("keydown", function(event) {
       if (event.key === "Enter") {
@@ -213,7 +216,27 @@
     }
   });
 
-    
+    function hilfeUmschalten() {
+      hilfeAktiv = !hilfeAktiv;
+      updateHilfeanzeige();
+      db.collection("teams").doc(aktuellesTeam).set({
+        stress: aktuellerStress,
+        erledigt: Array.from(erledigteFaelle),
+        hilfe: hilfeAktiv
+      });
+    }
+
+    function updateHilfeanzeige() {
+    const btn = document.getElementById("hilfeBtn");
+    if (hilfeAktiv) {
+      btn.textContent = "🆘 Hilfe ist unterwegs!";
+      btn.style.background = "#d32f2f";
+    } else {
+      btn.textContent = "🙋‍♀️ Hilfe anfordern";
+      btn.style.background = "#2e7d32";
+     }
+   }
+  
     function startTeam() {
       const team = document.getElementById("teamSelect").value;
       const teamText = document.getElementById("teamSelect").selectedOptions[0].text;
@@ -339,6 +362,10 @@
 
       const label = document.createElement("div");
       label.textContent = name;
+      if (daten.hilfe) {
+        label.textContent += " – 🆘 Hilfe benötigt";
+        label.style.color = "#d32f2f";
+      }
       label.style.marginBottom = "0.3rem";
       label.style.fontWeight = "bold";
 
@@ -408,6 +435,7 @@ setInterval(erstelleSchneeflocke, 300);
   
 </body>
 </html>
+
 
 
 
