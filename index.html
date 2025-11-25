@@ -434,8 +434,11 @@
    if (unsubscribeUebersicht) {
   unsubscribeUebersicht();
   unsubscribeUebersicht = null;
-}
-
+   }  
+   if (unsubscribeTeam) {
+  unsubscribeTeam();
+  unsubscribeTeam = null;
+   }
 }
 
   function erstelleSchneeflocke() {
@@ -465,6 +468,7 @@ setInterval(erstelleSchneeflocke, 300);
   
 </body>
 </html>
+
 
 
 
